@@ -1,117 +1,123 @@
 import * as THREE from "three";
-const scene = new THREE.Scene();
-const sceneWidth = window.innerWidth / 2;
-const sceneHeight = window.innerHeight;
-const camera = new THREE.PerspectiveCamera(
-  35,
-  sceneWidth / sceneHeight,
-  0.1,
-  3000
-);
-
-var light = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(light);
-var light1 = new THREE.PointLight(0xffffff, 0.5);
-scene.add(light1);
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(sceneWidth, sceneHeight);
-renderer.setClearColor(0xf8f3e9);
-document.body.appendChild(renderer.domElement);
-
-const obstacleY = 600;
-const obstacleZ = -1000;
-
-function createCube(x, y = obstacleY) {
-  const geometry = new THREE.BoxGeometry(25, 25, 25);
-  const material = new THREE.MeshLambertMaterial({ color: 0xef5462 });
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.x = x;
-  cube.position.y = y;
-  cube.position.z = obstacleZ;
-  return cube;
-}
-
-function createSphere(x, y = obstacleY) {
-  const geometry2 = new THREE.SphereGeometry(15);
-  const material2 = new THREE.MeshLambertMaterial({ color: 0xef5462 });
-  const sphere = new THREE.Mesh(geometry2, material2);
-  sphere.position.x = x;
-  sphere.position.y = y;
-  sphere.position.z = obstacleZ;
-  return sphere;
-}
-
-function createTetra(x, y = obstacleY) {
-  const geometry3 = new THREE.TetrahedronGeometry(20);
-  const material3 = new THREE.MeshLambertMaterial({ color: 0xef5462 });
-  const Tetra = new THREE.Mesh(geometry3, material3);
-  Tetra.rotation.x = 20;
-  Tetra.rotation.z = -10;
-  Tetra.position.x = x;
-  Tetra.position.y = y;
-  Tetra.position.z = obstacleZ;
-  return Tetra;
-}
-
+import { createScene, createCamera, createRenderer } from "./util";
+import { createCube, createSphere, createTetra } from "./shapeUtil";
+let gameEnd;
+let point;
+let speed;
 let obstacleShapes = [];
-const UserCube = createCube(0, 0, -1000);
-const UserSphere = createSphere(0, 0, -1000);
-const UserTetra = createTetra(0, 0, -1000, 0, 0);
+let timeInterval;
+let UserRandomShape;
+const scene = createScene();
+const camera = createCamera();
+const renderer = createRenderer();
+let requestID;
+const laneInterval = 100;
+const UserCube = createCube(0, -200);
+const UserSphere = createSphere(0, -200);
+const UserTetra = createTetra(0, -200);
 const userShape = [
   { type: "cube", object: UserCube },
   { type: "sphere", object: UserSphere },
   { type: "tetra", object: UserTetra }
 ];
-let index = Math.floor(Math.random() * Math.floor(3));
-const UserRandomShape = userShape[index];
-scene.add(UserRandomShape.object);
+
+variableSetup();
+randomUserObject();
+function randomUserObject() {
+  let index = Math.floor(Math.random() * Math.floor(3));
+  let userPositionX = 0;
+  if (UserRandomShape) {
+    userPositionX = UserRandomShape.object.position.x;
+    scene.remove(UserRandomShape.object);
+  }
+  UserRandomShape = userShape[index];
+  UserRandomShape.object.position.x = userPositionX;
+  scene.add(UserRandomShape.object);
+  return UserRandomShape;
+}
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
   if (keyCode == 37) {
-    UserRandomShape.object.position.x -= 100;
-    if (UserRandomShape.object.position.x <= -100) {
-      UserRandomShape.object.position.x = -100;
+    UserRandomShape.object.position.x -= laneInterval;
+    if (UserRandomShape.object.position.x <= -laneInterval) {
+      UserRandomShape.object.position.x = -laneInterval;
     }
   } else if (keyCode == 39) {
-    UserRandomShape.object.position.x += 100;
-    if (UserRandomShape.object.position.x >= 100) {
-      UserRandomShape.object.position.x = 100;
+    UserRandomShape.object.position.x += laneInterval;
+    if (UserRandomShape.object.position.x >= laneInterval) {
+      UserRandomShape.object.position.x = laneInterval;
     }
   }
 }
-function animate() {
-  requestAnimationFrame(animate);
+
+function variableSetup() {
+  gameEnd = false;
+  point = 0;
+  speed = 1.5;
   obstacleShapes.forEach(obstacleObject => {
-    obstacleObject.object.position.y -= 1;
+    scene.remove(obstacleObject.object);
   });
-
-  renderer.render(scene, camera);
-  gameOver(UserRandomShape, obstacleShapes);
-  obstacleShapes = clearPassedShapes(obstacleShapes);
+  obstacleShapes = [];
+  document.querySelector("div").classList.add("hidden");
+  document.querySelector("div.point").textContent = `${point}`;
+  timeInterval = 3000;
 }
+function animate() {
+  if (!gameEnd) {
+    requestID = requestAnimationFrame(animate);
+    obstacleShapes.forEach(obstacleObject => {
+      obstacleObject.object.position.y -= speed;
+    });
 
+    renderer.render(scene, camera);
+    gameOver(UserRandomShape, obstacleShapes);
+    obstacleShapes = clearPassedShapes(obstacleShapes);
+  }
+}
 delay();
 animate();
 
 function gameOver(UserRandomShape, obstacleShapes) {
   obstacleShapes.forEach(obstacleObject => {
     if (
-      UserRandomShape.object.position.x !== obstacleObject.object.position.x &&
-      obstacleObject.object.position.y === UserRandomShape.object.position.y &&
-      obstacleObject.type === UserRandomShape.type
+      obstacleObject.object.position.y - UserRandomShape.object.position.y <=
+        speed &&
+      obstacleObject.object.position.y > UserRandomShape.object.position.y
     ) {
-      document.querySelector("div").classList.remove("hidden");
+      if (
+        UserRandomShape.object.position.x !==
+          obstacleObject.object.position.x &&
+        obstacleObject.type === UserRandomShape.type
+      ) {
+        document.querySelector("div").classList.remove("hidden");
+        gameEnd = true;
+      } else if (
+        UserRandomShape.object.position.x ===
+          obstacleObject.object.position.x &&
+        obstacleObject.type === UserRandomShape.type
+      ) {
+        pointAccumulator(gameEnd);
+        speeding();
+        randomUserObject();
+      }
     }
   });
+}
+function pointAccumulator(gameEnd) {
+  if (!gameEnd) {
+    point += 1;
+  }
+  document.querySelector("div.point").textContent = `${point}`;
 }
 
 function clearPassedShapes(obstacleShapes) {
   return obstacleShapes
     .map(obstacleObject => {
-      if (obstacleObject.object.position.y <= -200) {
+      if (
+        obstacleObject.object.position.y <= UserRandomShape.object.position.y
+      ) {
         scene.remove(obstacleObject.object);
         return undefined;
       } else {
@@ -121,9 +127,9 @@ function clearPassedShapes(obstacleShapes) {
     .filter(obstacleObject => obstacleObject !== undefined);
 }
 
-var shuffle = function(array) {
-  var currentIndex = array.length;
-  var temporaryValue, randomIndex;
+function shuffle(array) {
+  let currentIndex = array.length;
+  let temporaryValue, randomIndex;
 
   while (0 !== currentIndex) {
     randomIndex = Math.floor(Math.random() * currentIndex);
@@ -134,10 +140,10 @@ var shuffle = function(array) {
     array[randomIndex] = temporaryValue;
   }
   return array;
-};
+}
 function delay() {
   setTimeout(() => {
-    const xCoordinate = [0, 100, -100];
+    const xCoordinate = [0, laneInterval, -laneInterval];
     shuffle(xCoordinate);
     const cube = createCube(xCoordinate[0]);
     const sphere = createSphere(xCoordinate[1]);
@@ -149,5 +155,24 @@ function delay() {
     );
     scene.add(cube, sphere, tetra);
     delay();
-  }, 3000);
+  }, timeInterval);
 }
+
+function speeding() {
+  if (point % 3 === 0 && point != 0) {
+    speed *= 1.3;
+    timeInterval *= 0.9;
+  }
+}
+
+function restart() {
+  let iniObject = randomUserObject();
+  iniObject.object.position.x = 0;
+  cancelAnimationFrame(requestID);
+  variableSetup();
+  animate();
+}
+
+document
+  .querySelector("button.restart")
+  .addEventListener("click", () => restart());
