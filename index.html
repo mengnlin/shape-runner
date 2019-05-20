@@ -8,47 +8,132 @@
     <style>
       body {
         margin: 0;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: url(src/images/back5.png);
+        color: white;
+        /* background-size: fit; */
         /* height: 100vh; */
       }
 
-      canvas {
-        display: block;
-        /* delete the scroll bar */
-        width: 100px;
-        height: 500px;
+      .Logo {
+        font-family: cursive;
+        font-weight: bold;
+        font-size: 48px;
+        color: white;
+        /* #ef5462; */
+      }
+      .outer-container {
+        margin-left: auto;
+        margin-right: auto;
+        width: 1050px;
+        display: flex;
+        justify-content: space-between;
       }
 
-      div {
-        width: 200px;
-        height: 50px;
-        background: red;
-        /* position: absolute; */
-        font-size: 28px;
+      .instruction {
+        width: 400px;
+      }
+      .instruction h2 {
+        font-size: 40px;
+      }
+      .instruction p {
+        font-size: 30px;
+        font-weight: bold;
+      }
+
+      .gameContainer {
+        flex-grow: 1;
+        width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .gameRender {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .gameStat {
+        width: 100px;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 30px;
+        font-weight: bold;
+      }
+      .button {
+        padding: 10px;
+        font-size: 20px;
+        background: #ef5462;
+        color: white;
+        border-radius: 5px;
       }
       .hidden {
         display: none;
       }
-      .gameContainer {
-        margin-left: auto;
-        margin-right: auto;
-        background: pink;
-        width: 500px;
-        height: 300px;
-      }
+
       .myCanvas {
         border: 1px solid black;
+      }
+      .gameOver {
+        width: 421px;
+        height: 528px;
+        font-size: 40px;
+        font-weight: bold;
+        position: absolute;
+        color: black;
+        left: 200px;
+      }
+      .start {
+        font-size: 40px;
+        font-weight: bold;
+        position: absolute;
+        color: black;
+        left: 200px;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: lightgray;
+        left: 250px;
+        top: 200px;
+        border-radius: 5px;
+        cursor: pointer;
+        /* hover: over; */
       }
     </style>
   </head>
   <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
-    <div class="gameContainer">
-      <div class="gameOver">Game Over</div>
-      <div class="point">Point</div>
-      <button class="restart">Restart</button>
-      <button class="pause">Pause</button>
-      <button class="resume">Resume</button>
-      <canvas class="myCanvas" style="height: 528px; width: 421px;"></canvas>
+    <h1 class="Logo">ShapeRunner</h1>
+    <div class="outer-container">
+      <div class="instruction">
+        <h2>Instruction</h2>
+        <p>Move left: ←</p>
+        <p>Move Right: →</p>
+        <p>Restart: S</p>
+        <p>Resume: R</p>
+        <p>Pause: A</p>
+      </div>
+      <div class="gameContainer">
+        <div class="gameRender">
+          <div class="gameStat">
+            Point
+            <p class="gamePoint"></p>
+          </div>
+          <div class="gameOver">Game Over</div>
+          <button class="start">start</button>
+          <canvas
+            class="myCanvas"
+            style="height: 528px; width: 421px;"
+          ></canvas>
+          <div class="gameStat">
+            Speed
+            <p class="gameSpeed"></p>
+          </div>
+        </div>
+        <div class="gameControl">
+          <button class="restart button">Restart(S)</button>
+          <button class="pause button">Pause(A)</button>
+          <button class="resume button">Resume(R)</button>
+        </div>
+      </div>
     </div>
     <script src="./src/index.js"></script>
   </body>

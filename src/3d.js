@@ -32,7 +32,8 @@ function restart() {
   });
   obstacleShapes = [];
   document.querySelector("div.gameOver").classList.add("hidden");
-  document.querySelector("div.point").textContent = `${point}`;
+  document.querySelector("p.gamePoint").textContent = `${point}`;
+  document.querySelector("p.gameSpeed").textContent = `${speed.toFixed(2)}`;
   timeInterval = 3000;
   let iniObject = randomUserObject();
   iniObject.object.position.x = 0;
@@ -41,6 +42,7 @@ function restart() {
   animate();
   continouslyObstacleRenderer();
 }
+document.querySelector(".start").addEventListener("click", restart);
 
 function pause() {
   gamePause = true;
@@ -58,7 +60,6 @@ function resume() {
 document.querySelector("button.resume").addEventListener("click", resume);
 document.querySelector("button.restart").addEventListener("click", restart);
 
-restart();
 function randomUserObject() {
   let index = Math.floor(Math.random() * Math.floor(3));
   let userPositionX = 0;
@@ -75,7 +76,6 @@ function randomUserObject() {
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   const keyCode = event.which;
-  console.log(keyCode);
   switch (keyCode) {
     case 37:
       // key left
@@ -111,7 +111,7 @@ function animate() {
     obstacleShapes.forEach(obstacleObject => {
       obstacleObject.object.position.y -= speed;
     });
-
+    document.querySelector(".start").classList.add("hidden");
     renderer.render(scene, camera);
     gameOver(UserRandomShape, obstacleShapes);
     obstacleShapes = clearPassedShapes(obstacleShapes);
@@ -150,7 +150,7 @@ function pointAccumulator(gameEnd) {
   if (!gameEnd) {
     point += 1;
   }
-  document.querySelector("div.point").textContent = `${point}`;
+  document.querySelector("p.gamePoint").textContent = `${point}`;
 }
 
 function clearPassedShapes(obstacleShapes) {
@@ -203,5 +203,6 @@ function speeding() {
   if (point % 3 === 0 && point != 0) {
     speed *= 1.3;
     timeInterval *= 0.9;
+    document.querySelector("p.gameSpeed").textContent = `${speed.toFixed(2)}`;
   }
 }
