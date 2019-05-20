@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import { createScene, createCamera, createRenderer } from "./util";
 import { createCube, createSphere, createTetra } from "./shapeUtil";
 let gameEnd;
@@ -7,10 +6,12 @@ let speed;
 let obstacleShapes = [];
 let timeInterval;
 let UserRandomShape;
+let gamePause;
 const scene = createScene();
 const camera = createCamera();
 const renderer = createRenderer();
 let requestID;
+let TimeOutID;
 const laneInterval = 100;
 const UserCube = createCube(0, -200);
 const UserSphere = createSphere(0, -200);
@@ -21,8 +22,43 @@ const userShape = [
   { type: "tetra", object: UserTetra }
 ];
 
-variableSetup();
-randomUserObject();
+function restart() {
+  gameEnd = false;
+  point = 0;
+  speed = 1.5;
+  gamePause = false;
+  obstacleShapes.forEach(obstacleObject => {
+    scene.remove(obstacleObject.object);
+  });
+  obstacleShapes = [];
+  document.querySelector("div").classList.add("hidden");
+  document.querySelector("div.point").textContent = `${point}`;
+  timeInterval = 3000;
+  let iniObject = randomUserObject();
+  iniObject.object.position.x = 0;
+  cancelAnimationFrame(requestID);
+  clearTimeout(TimeOutID);
+  animate();
+  continouslyObstacleRenderer();
+}
+
+function pause() {
+  gamePause = true;
+  cancelAnimationFrame(requestID);
+  clearTimeout(TimeOutID);
+}
+document.querySelector("button.pause").addEventListener("click", pause);
+function resume() {
+  if (gamePause) {
+    continouslyObstacleRenderer();
+    animate();
+    gamePause = false;
+  }
+}
+document.querySelector("button.resume").addEventListener("click", resume);
+document.querySelector("button.restart").addEventListener("click", restart);
+
+restart();
 function randomUserObject() {
   let index = Math.floor(Math.random() * Math.floor(3));
   let userPositionX = 0;
@@ -38,32 +74,37 @@ function randomUserObject() {
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
-  var keyCode = event.which;
-  if (keyCode == 37) {
-    UserRandomShape.object.position.x -= laneInterval;
-    if (UserRandomShape.object.position.x <= -laneInterval) {
-      UserRandomShape.object.position.x = -laneInterval;
-    }
-  } else if (keyCode == 39) {
-    UserRandomShape.object.position.x += laneInterval;
-    if (UserRandomShape.object.position.x >= laneInterval) {
-      UserRandomShape.object.position.x = laneInterval;
-    }
+  const keyCode = event.which;
+  console.log(keyCode);
+  switch (keyCode) {
+    case 37:
+      // key left
+      UserRandomShape.object.position.x -= laneInterval;
+      if (UserRandomShape.object.position.x <= -laneInterval) {
+        UserRandomShape.object.position.x = -laneInterval;
+      }
+      break;
+    case 39:
+      // key right
+      UserRandomShape.object.position.x += laneInterval;
+      if (UserRandomShape.object.position.x >= laneInterval) {
+        UserRandomShape.object.position.x = laneInterval;
+      }
+      break;
+    case 83:
+      // key s
+      restart();
+      break;
+    case 65:
+      // key a
+      pause();
+      break;
+    case 82:
+      resume();
+      break;
   }
 }
 
-function variableSetup() {
-  gameEnd = false;
-  point = 0;
-  speed = 1.5;
-  obstacleShapes.forEach(obstacleObject => {
-    scene.remove(obstacleObject.object);
-  });
-  obstacleShapes = [];
-  document.querySelector("div").classList.add("hidden");
-  document.querySelector("div.point").textContent = `${point}`;
-  timeInterval = 3000;
-}
 function animate() {
   if (!gameEnd) {
     requestID = requestAnimationFrame(animate);
@@ -76,8 +117,8 @@ function animate() {
     obstacleShapes = clearPassedShapes(obstacleShapes);
   }
 }
-delay();
-animate();
+
+// animate();
 
 function gameOver(UserRandomShape, obstacleShapes) {
   obstacleShapes.forEach(obstacleObject => {
@@ -141,8 +182,8 @@ function shuffle(array) {
   }
   return array;
 }
-function delay() {
-  setTimeout(() => {
+function continouslyObstacleRenderer() {
+  TimeOutID = setTimeout(() => {
     const xCoordinate = [0, laneInterval, -laneInterval];
     shuffle(xCoordinate);
     const cube = createCube(xCoordinate[0]);
@@ -154,7 +195,7 @@ function delay() {
       { type: "tetra", object: tetra }
     );
     scene.add(cube, sphere, tetra);
-    delay();
+    continouslyObstacleRenderer();
   }, timeInterval);
 }
 
@@ -164,15 +205,3 @@ function speeding() {
     timeInterval *= 0.9;
   }
 }
-
-function restart() {
-  let iniObject = randomUserObject();
-  iniObject.object.position.x = 0;
-  cancelAnimationFrame(requestID);
-  variableSetup();
-  animate();
-}
-
-document
-  .querySelector("button.restart")
-  .addEventListener("click", () => restart());
