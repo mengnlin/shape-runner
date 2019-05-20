@@ -28,15 +28,28 @@
       .hidden {
         display: none;
       }
+      .gameContainer {
+        margin-left: auto;
+        margin-right: auto;
+        background: pink;
+        width: 500px;
+        height: 300px;
+      }
+      .myCanvas {
+        border: 1px solid black;
+      }
     </style>
   </head>
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
-    <div class="hidden">Game Over</div>
-    <div class="point"></div>
-    <button class="restart">Restart</button>
-    <button class="pause">Pause</button>
-    <button class="resume">Resume</button>
+    <div class="gameContainer">
+      <div class="gameOver">Game Over</div>
+      <div class="point">Point</div>
+      <button class="restart">Restart</button>
+      <button class="pause">Pause</button>
+      <button class="resume">Resume</button>
+      <canvas class="myCanvas" style="height: 528px; width: 421px;"></canvas>
+    </div>
     <script src="./src/index.js"></script>
   </body>
 </html>

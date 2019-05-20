@@ -31,7 +31,7 @@ function restart() {
     scene.remove(obstacleObject.object);
   });
   obstacleShapes = [];
-  document.querySelector("div").classList.add("hidden");
+  document.querySelector("div.gameOver").classList.add("hidden");
   document.querySelector("div.point").textContent = `${point}`;
   timeInterval = 3000;
   let iniObject = randomUserObject();
@@ -132,7 +132,7 @@ function gameOver(UserRandomShape, obstacleShapes) {
           obstacleObject.object.position.x &&
         obstacleObject.type === UserRandomShape.type
       ) {
-        document.querySelector("div").classList.remove("hidden");
+        document.querySelector("div.gameOver").classList.remove("hidden");
         gameEnd = true;
       } else if (
         UserRandomShape.object.position.x ===

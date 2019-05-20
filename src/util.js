@@ -1,7 +1,9 @@
 import * as THREE from "three";
 
-const sceneWidth = window.innerWidth / 2;
-const sceneHeight = window.innerHeight;
+const canvas = document.querySelector(".myCanvas");
+const sceneWidth = parseInt(canvas.style.width, 10);
+const sceneHeight = parseInt(canvas.style.height, 10);
+// sceneHeight = window.innerHeight / 1.5
 const laneInterval = 100;
 export function createScene() {
   const scene = new THREE.Scene();
@@ -32,10 +34,15 @@ export function createCamera() {
 }
 
 export function createRenderer() {
-  const renderer = new THREE.WebGLRenderer();
+  const myCanvas = document.querySelector(".myCanvas");
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas: myCanvas,
+    antialias: true
+  });
   renderer.setSize(sceneWidth, sceneHeight);
   renderer.setClearColor(0xf8f3e9);
-  document.body.appendChild(renderer.domElement);
+  // document.body.appendChild(renderer.domElement);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   return renderer;
