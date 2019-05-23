@@ -201,7 +201,7 @@ function continouslyObstacleRenderer() {
 
 function speeding() {
   if (point % 3 === 0 && point != 0) {
-    speed *= 1.1;
+    speed *= 1.2;
     timeInterval *= 0.9;
     document.querySelector("p.gameSpeed").textContent = `${speed.toFixed(2)}`;
   }
