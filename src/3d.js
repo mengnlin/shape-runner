@@ -25,7 +25,7 @@ const userShape = [
 function restart() {
   gameEnd = false;
   point = 0;
-  speed = 1.5;
+  speed = 2.0;
   gamePause = false;
   obstacleShapes.forEach(obstacleObject => {
     scene.remove(obstacleObject.object);
@@ -201,7 +201,7 @@ function continouslyObstacleRenderer() {
 
 function speeding() {
   if (point % 3 === 0 && point != 0) {
-    speed *= 1.3;
+    speed *= 1.1;
     timeInterval *= 0.9;
     document.querySelector("p.gameSpeed").textContent = `${speed.toFixed(2)}`;
   }
