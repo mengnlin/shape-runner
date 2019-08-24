@@ -25,7 +25,7 @@ const userShape = [
 function restart() {
   gameEnd = false;
   point = 0;
-  speed = 4.0;
+  speed = 5.0;
   gamePause = false;
   obstacleShapes.forEach(obstacleObject => {
     scene.remove(obstacleObject.object);
