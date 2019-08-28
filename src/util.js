@@ -3,7 +3,6 @@ import * as THREE from "three";
 const canvas = document.querySelector(".myCanvas");
 const sceneWidth = parseInt(canvas.style.width, 10);
 const sceneHeight = parseInt(canvas.style.height, 10);
-// sceneHeight = window.innerHeight / 1.5
 const laneInterval = 100;
 export function createScene() {
   const scene = new THREE.Scene();
@@ -42,9 +41,7 @@ export function createRenderer() {
   });
   renderer.setSize(sceneWidth, sceneHeight);
   renderer.setClearColor(0xf8f3e9);
-  // document.body.appendChild(renderer.domElement);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
   return renderer;
 }
 
