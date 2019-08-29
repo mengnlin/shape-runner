@@ -1,1 +1,1 @@
-import "./3d";
+import "./game";

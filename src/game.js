@@ -1,5 +1,5 @@
-import { createScene, createCamera, createRenderer } from "./util";
-import { createCube, createSphere, createTetra } from "./shapeUtil";
+import { createScene, createCamera, createRenderer } from "./threeDSetUp";
+import { createCube, createSphere, createTetra } from "./3DObjects";
 let gameEnd;
 let point;
 let speed;
